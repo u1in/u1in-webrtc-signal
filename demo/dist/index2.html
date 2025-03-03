@@ -1,0 +1,63 @@
+<html lang="en">
+  <body>
+    <div>本机id：<span id="id"></span></div>
+    <button onclick="connect()">发送</button>
+  </body>
+
+  <script src="http://127.0.0.1:3123/signal.min.js"></script>
+
+  <script>
+    const connect = () => {
+      const targetId = prompt("请输入对方ID:");
+      if (targetId) {
+        sendMsg(targetId);
+      }
+    };
+  </script>
+
+  <script>
+    // 初始化代码，此时获得注册唯一id
+    const signal = new Signal({
+      // config.json配置的ws.port
+      wsUrl: "ws://127.0.0.1:3124",
+    });
+
+    // 监听初始化回调，展示id
+    signal.on("welcome", ({ senderId, payload: id }) => {
+      // id回调
+      document.getElementById("id").innerText = id;
+    });
+
+    // 注册offer事件全局监听，处理外来接入请求
+    signal.on("offer", ({ senderId, payload: offer }) => {
+      signal
+        .createPeer(senderId)
+        .ontrack((event) => {
+          console.log(`收到来自${senderId}`, event);
+        })
+        .createChannel()
+        .recieveChannelData((data) => {
+          console.log(`收到来自${senderId}:`, data);
+        })
+        .saveOffer(offer)
+        .createAnswer()
+        .sendAnswer()
+        .do();
+    });
+
+    // 主动发起请求
+    const sendMsg = async (targetId, data) => {
+      if (!signal.getPeer(targetId)?.channel) {
+        await signal.createPeer(targetId).createOffer().sendOffer().do();
+      }
+      signal
+        .getPeer(targetId)
+        .createChannel()
+        .recieveChannelData((data) => {
+          console.log(`收到来自${senderId}:`, data);
+        })
+        .sendChannelData(`Hello I'm ${signal.id}`)
+        .do();
+    };
+  </script>
+</html>

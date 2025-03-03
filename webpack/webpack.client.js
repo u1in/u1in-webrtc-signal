@@ -2,7 +2,7 @@ const path = require("path");
 
 module.exports = {
   target: "web",
-  mode: "production",
+  mode: "development",
   entry: {
     signal: path.join(__dirname, "../client/index.js"),
   },
@@ -35,6 +35,7 @@ module.exports = {
   },
 
   optimization: {
+    minimize: true,
     splitChunks: false,
   },
 };

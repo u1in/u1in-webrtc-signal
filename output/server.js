@@ -25,23 +25,7 @@ module.exports = require("randomstring");
 
 /***/ }),
 
-/***/ 572:
-/***/ ((module) => {
-
-"use strict";
-module.exports = /*#__PURE__*/JSON.parse('{"port":3123,"ws":{"port":3124}}');
-
-/***/ }),
-
-/***/ 694:
-/***/ ((module) => {
-
-"use strict";
-module.exports = require("koa-static");
-
-/***/ }),
-
-/***/ 791:
+/***/ 205:
 /***/ ((__unused_webpack_module, __unused_webpack___webpack_exports__, __webpack_require__) => {
 
 "use strict";
@@ -121,15 +105,23 @@ consola.info("Websocket server running on port ".concat(CONFIG.ws.port));
 
 /***/ }),
 
-/***/ 797:
+/***/ 572:
 /***/ ((module) => {
 
 "use strict";
-module.exports = require("consola");
+module.exports = /*#__PURE__*/JSON.parse('{"port":3123,"ws":{"port":3124}}');
 
 /***/ }),
 
-/***/ 830:
+/***/ 694:
+/***/ ((module) => {
+
+"use strict";
+module.exports = require("koa-static");
+
+/***/ }),
+
+/***/ 785:
 /***/ ((__unused_webpack_module, __unused_webpack___webpack_exports__, __webpack_require__) => {
 
 "use strict";
@@ -148,6 +140,14 @@ app.use(serve(path.join(__dirname, "./dist")));
 app.listen(CONFIG.port, "0.0.0.0", function () {
   consola.info("Static server running on port ".concat(CONFIG.port));
 });
+
+/***/ }),
+
+/***/ 797:
+/***/ ((module) => {
+
+"use strict";
+module.exports = require("consola");
 
 /***/ }),
 
@@ -187,7 +187,7 @@ module.exports = require("path");
 /******/ 	
 /************************************************************************/
 console.clear();
-__webpack_require__(830);
-__webpack_require__(791);
+__webpack_require__(785);
+__webpack_require__(205);
 /******/ })()
 ;

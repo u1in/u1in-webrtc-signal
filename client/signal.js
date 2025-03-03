@@ -49,8 +49,6 @@ class Signal {
       iceServers: [{ urls: "stun:stun.l.google.com:19302" }],
     });
 
-    this.peers.set(targetId, currentPeer);
-
     currentPeer.onicecandidate = ({ candidate }) => {
       if (candidate) {
         this.sendCandidate(targetId, candidate);
@@ -84,7 +82,13 @@ class Signal {
       }
     );
 
-    return new Peer(targetId, currentPeer, this);
+    this.peers.set(targetId, new Peer(targetId, currentPeer, this));
+
+    return this.peers.get(targetId);
+  }
+
+  getPeer(targetId) {
+    return this.peers.get(targetId);
   }
 
   sendOffer(targetId, offer) {
