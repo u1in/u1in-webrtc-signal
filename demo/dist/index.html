@@ -26,12 +26,13 @@
 </script>
 
 <script>
+  // 初始化代码，此时获得注册唯一id
   const signal = new Signal({
     // config.json配置的ws.port
     wsUrl: "ws://127.0.0.1:3124",
   });
 
-  // 初始化代码，用于注册唯一id
+  // 监听初始化回调，展示id
   signal.on("welcome", ({ senderId, payload: id }) => {
     // id回调
     document.getElementById("id").innerText = id;
