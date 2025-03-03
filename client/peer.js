@@ -1,16 +1,56 @@
 import mitt from "mitt";
 
 export default class Peer {
-  constructor(targetId, peer, signal) {
+  constructor(targetId, signal) {
     this.targetId = targetId;
-    this.peer = peer;
+    this.peer = null;
     this.channel = null;
     this.emitter = mitt();
     this.signal = signal;
     this.tasks = [];
     this.offer = null;
     this.answer = null;
-    this.dataQueue = [];
+
+    this.peer = new RTCPeerConnection({
+      iceServers: [{ urls: "stun:stun.l.google.com:19302" }],
+    });
+
+    this.peer.onicecandidate = ({ candidate }) => {
+      if (candidate) {
+        this.signal.sendCandidate(targetId, candidate);
+      }
+    };
+
+    this.peer.onconnectionstatechange = () => {
+      console.log(this.peer.connectionState);
+      if (
+        ["closed", "disconnected", "failed"].includes(this.peer.connectionState)
+      ) {
+        this.peer.close();
+        this.signal.deletePeer(targetId);
+      }
+      if (["connected"].includes(this.peer.connectionState)) {
+        debugger;
+        this.emitter.emit(`${targetId}-connected`);
+        this.do();
+      }
+    };
+
+    this.signal.emitter.on(
+      `${targetId}-answer`,
+      async ({ senderId, payload: answer }) => {
+        debugger;
+        await this.peer.setRemoteDescription(answer);
+      }
+    );
+
+    this.signal.emitter.on(
+      `${targetId}-candidate`,
+      async ({ senderId, payload: candidate }) => {
+        debugger;
+        await this.peer.addIceCandidate(candidate);
+      }
+    );
   }
 
   addTask(func) {
@@ -25,6 +65,23 @@ export default class Peer {
     this.tasks = [];
   }
 
+  rename(targetId) {
+    return this.addTask(() => {
+      this.targetId = targetId;
+    });
+  }
+
+  waitForConnected() {
+    return this.addTask(() => {
+      return new Promise((resolve) => {
+        this.emitter.on(`${this.targetId}-connected`, () => {
+          debugger;
+          resolve();
+        });
+      });
+    });
+  }
+
   createChannel() {
     return this.addTask(() => {
       if (this.channel) {
@@ -35,14 +92,12 @@ export default class Peer {
         maxRetransmits: 3, // 最大重传次数
       });
 
-      this.channel.onopen = () => {
-        debugger;
-        this.dataQueue.map((data) => {
-          this.channel.send(data);
-        });
-        this.dataQueue = [];
-      };
+      this.channel.onopen = () => {};
     });
+  }
+
+  getChannel() {
+    return this.channel;
   }
 
   recieveChannelData(func) {
@@ -57,12 +112,7 @@ export default class Peer {
   sendChannelData(data) {
     debugger;
     return this.addTask(() => {
-      debugger;
-      if (this.channel.readyState === "open") {
-        this.channel.send(data);
-      } else {
-        this.dataQueue.push(data);
-      }
+      this.channel.send(data);
     });
   }
 
@@ -74,13 +124,13 @@ export default class Peer {
     });
   }
 
-  prehandle(func) {
+  handlePeer(func) {
     return this.addTask(() => {
       func(this.peer);
     });
   }
 
-  ontrack(func) {
+  peerOnTrack(func) {
     return this.addTask(() => {
       this.peer.ontrack = func;
     });

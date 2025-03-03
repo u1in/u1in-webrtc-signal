@@ -12,6 +12,10 @@ class Signal {
     this.emitter = mitt();
     this.ws = new WebSocket(options.wsUrl);
 
+    this.emitter.on("welcome", ({ senderId, payload: id }) => {
+      this.id = id;
+    });
+
     this.ws.onmessage = async (event) => {
       const data = JSON.parse(event.data);
       const { type, senderId, payload } = data;
@@ -27,10 +31,6 @@ class Signal {
         senderId,
         payload,
       });
-
-      this.emitter.on("welcome", ({ senderId, payload: id }) => {
-        this.id = id;
-      });
     };
 
     return this;
@@ -45,46 +45,16 @@ class Signal {
     if (this.peers.get(targetId)) {
       return this.peers.get(targetId);
     }
-    let currentPeer = new RTCPeerConnection({
-      iceServers: [{ urls: "stun:stun.l.google.com:19302" }],
-    });
+    const peer = new Peer(targetId, this);
+    this.peers.set(targetId, peer);
+    return peer;
+  }
 
-    currentPeer.onicecandidate = ({ candidate }) => {
-      if (candidate) {
-        this.sendCandidate(targetId, candidate);
-      }
-    };
-
-    currentPeer.onconnectionstatechange = () => {
-      if (
-        ["closed", "disconnected", "failed"].includes(
-          currentPeer.connectionState
-        )
-      ) {
-        currentPeer.close();
-        this.emitter.off(`${targetId}-answer`);
-        this.emitter.off(`${targetId}-candidate`);
-        this.peers.delete(targetId);
-      }
-    };
-
-    this.emitter.on(
-      `${targetId}-answer`,
-      async ({ senderId, payload: answer }) => {
-        await currentPeer.setRemoteDescription(answer);
-      }
-    );
-
-    this.emitter.on(
-      `${targetId}-candidate`,
-      async ({ senderId, payload: candidate }) => {
-        await currentPeer.addIceCandidate(candidate);
-      }
-    );
-
-    this.peers.set(targetId, new Peer(targetId, currentPeer, this));
-
-    return this.peers.get(targetId);
+  deletePeer(targetId) {
+    this.emitter.off(`${targetId}-answer`);
+    this.emitter.off(`${targetId}-candidate`);
+    this.peers.delete(targetId);
+    return this;
   }
 
   getPeer(targetId) {

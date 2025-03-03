@@ -29,30 +29,46 @@
     });
 
     // 注册offer事件全局监听，处理外来接入请求
-    signal.on("offer", ({ senderId, payload: offer }) => {
-      signal
+    signal.on("offer", async ({ senderId, payload: offer }) => {
+      debugger;
+      await signal
         .createPeer(senderId)
-        .ontrack((event) => {
-          console.log(`收到来自${senderId}`, event);
-        })
-        .createChannel()
-        .recieveChannelData((data) => {
-          console.log(`收到来自${senderId}:`, data);
-        })
         .saveOffer(offer)
         .createAnswer()
         .sendAnswer()
         .do();
+
+      await signal
+        .getPeer(senderId)
+        .waitForConnected()
+        .createChannel()
+        .recieveChannelData((data) => {
+          console.log(`收到来自${senderId}:`, data);
+        })
+        .do();
+
+      // await signal
+      //   .getPeer(senderId)
+      //   .waitForConnected()
+      //   .createChannel()
+      //   .recieveChannelData((data) => {
+      //     console.log(`收到来自${senderId}:`, data);
+      //   });
     });
 
     // 主动发起请求
     const sendMsg = async (targetId, data) => {
-      if (!signal.getPeer(targetId)?.channel) {
+      debugger;
+      if (!signal.getPeer(targetId)) {
         await signal.createPeer(targetId).createOffer().sendOffer().do();
       }
-      signal
+      debugger;
+      if (!signal.getPeer(targetId)?.channel) {
+        await signal.getPeer(targetId).waitForConnected().createChannel().do();
+      }
+      debugger;
+      await signal
         .getPeer(targetId)
-        .createChannel()
         .recieveChannelData((data) => {
           console.log(`收到来自${senderId}:`, data);
         })
