@@ -1,6 +1,6 @@
 # u1in-webrtc-signal
 
-一个集成了**基于 Node 信令服务器**和**配套客户端 js 库**的 Webrtc 信令服务工具
+一个集成了**基于 Node 信令服务器**和**基于mitt的配套JS脚本**的 Webrtc 信令服务工具
 
 ## 1. 安装
 
