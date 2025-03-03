@@ -61,16 +61,7 @@
   const sendOffer = (targetId) => {
     signal
       .createPeer(targetId)
-      .prehandle((peer) => {
-        if (videoStream) {
-          videoStream.getTracks().map((track) => {
-            peer.addTrack(track, videoStream);
-          });
-        }
-      })
-      .ontrack((event) => {
-        document.querySelector("#remote-video").srcObject = event.streams[0];
-      })
+      .createChannel()
       .createOffer()
       .sendOffer()
       .do();

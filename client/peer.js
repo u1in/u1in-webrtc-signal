@@ -1,7 +1,12 @@
+import Randomstring from "randomstring";
+import mitt from "mitt";
+
 export default class Peer {
   constructor(targetId, peer, signal) {
     this.targetId = targetId;
     this.peer = peer;
+    this.channels = new Map();
+    this.emitter = mitt();
     this.signal = signal;
     this.tasks = [];
     this.offer = null;
@@ -18,6 +23,53 @@ export default class Peer {
       await this.tasks[i]();
     }
     this.tasks = [];
+  }
+
+  createChannel(channelId = Randomstring.generate(6)) {
+    return this.addTask(() => {
+      const channel = this.peer.createDataChannel(channelId, {
+        ordered: true, // 保证数据顺序
+        maxRetransmits: 3, // 最大重传次数
+      });
+      this.channels.set(channelId, channel);
+
+      channel.onopen = () => {
+        channel.send("Hello!");
+      };
+
+      channel.onmessage = (event) => {
+        this.emitter.emit(`${channelId}-message`, event.data);
+      };
+    });
+  }
+
+  handleChannelMsg(func, _channelId) {
+    return this.addTask(() => {
+      const channelIds = Array.from(this.channels.keys());
+      const lastChannelId = channelIds[channelIds.length - 1];
+      const channelId = _channelId || lastChannelId;
+      this.emitter.on(`${channelId}-message`, func);
+    });
+  }
+
+  sendChannelData(data, _channelId) {
+    return this.addTask(() => {
+      const channelIds = Array.from(this.channels.keys());
+      const lastChannelId = channelIds[channelIds.length - 1];
+      const channelId = _channelId || lastChannelId;
+      this.channels.get(channelId).send(data);
+    });
+  }
+
+  closeChannel(_channelId) {
+    return this.addTask(() => {
+      const channelIds = Array.from(this.channels.keys());
+      const lastChannelId = channelIds[channelIds.length - 1];
+      const channelId = _channelId || lastChannelId;
+      this.emitter.off(`${channelId}`);
+      this.channels.get(channelId).close();
+      this.channels.delete(channelId);
+    });
   }
 
   prehandle(func) {
