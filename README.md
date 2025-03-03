@@ -67,12 +67,13 @@ node server.js
 <html lang="en">
   <script src="http://127.0.0.1:3123/signal.min.js"></script>
   <script>
+    // 初始化ws，获得唯一id
     const signal = new Signal({
-      // default.json配置的ws.port
+      // config.json配置的ws.port
       wsUrl: "ws://127.0.0.1:3124",
     });
 
-    // 初始化代码，用于注册唯一id
+    // signal.on 可以监听welcome offer answer candidate 等事件的回调
     signal.on("welcome", ({ senderId, payload: id }) => {
       // id回调
     });
@@ -109,4 +110,4 @@ node server.js
 
 ## 5. 待实现
 
-[ ] server.js集成，不需要npm i
+- [ ] server.js集成，不需要npm i
