@@ -100,9 +100,6 @@ var signal = function signal(senderId, data) {
       break;
   }
 };
-wss.on("open", function () {
-  consola.info("Websocket server running on port ".concat(CONFIG.ws.port));
-});
 wss.on("connection", function (ws) {
   var id = randomstring.generate(10);
   clients.set(id, ws);
@@ -120,6 +117,7 @@ wss.on("connection", function (ws) {
     payload: id
   }));
 });
+consola.info("Websocket server running on port ".concat(CONFIG.ws.port));
 
 /***/ }),
 
@@ -131,27 +129,33 @@ module.exports = require("consola");
 
 /***/ }),
 
+/***/ 830:
+/***/ ((__unused_webpack_module, __unused_webpack___webpack_exports__, __webpack_require__) => {
+
+"use strict";
+
+;// external "core-js/modules/es.array.join.js"
+const es_array_join_js_namespaceObject = require("core-js/modules/es.array.join.js");
+;// ./server/static.js
+
+var CONFIG = __webpack_require__(572);
+var path = __webpack_require__(928);
+var Koa = __webpack_require__(101);
+var serve = __webpack_require__(694);
+var consola = __webpack_require__(797);
+var app = new Koa();
+app.use(serve(path.join(__dirname, "./dist")));
+app.listen(CONFIG.port, "0.0.0.0", function () {
+  consola.info("Static server running on port ".concat(CONFIG.port));
+});
+
+/***/ }),
+
 /***/ 928:
 /***/ ((module) => {
 
 "use strict";
 module.exports = require("path");
-
-/***/ }),
-
-/***/ 949:
-/***/ ((__unused_webpack_module, __unused_webpack_exports, __webpack_require__) => {
-
-var path = __webpack_require__(928);
-var config = __webpack_require__(572);
-var Koa = __webpack_require__(101);
-var serve = __webpack_require__(694);
-var consola = __webpack_require__(797);
-var app = new Koa();
-app.use(serve("./dist"));
-app.listen(config.port, "0.0.0.0", function () {
-  consola.info("Static server running on port ".concat(config.port));
-});
 
 /***/ })
 
@@ -183,7 +187,7 @@ app.listen(config.port, "0.0.0.0", function () {
 /******/ 	
 /************************************************************************/
 console.clear();
-__webpack_require__(949);
+__webpack_require__(830);
 __webpack_require__(791);
 /******/ })()
 ;

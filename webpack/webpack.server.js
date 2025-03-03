@@ -46,10 +46,6 @@ module.exports = {
           to: path.join(__dirname, "../output/config.json"),
         },
         {
-          from: path.join(__dirname, "../demo/demo.html"),
-          to: path.join(__dirname, "../output/dist/demo.html"),
-        },
-        {
           from: path.join(__dirname, "../package.json"),
           to: path.join(__dirname, "../output/package.json"),
         },
@@ -59,9 +55,5 @@ module.exports = {
 
   optimization: {
     minimize: false,
-  },
-  node: {
-    __dirname: false,
-    __filename: false,
   },
 };

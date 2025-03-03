@@ -5,9 +5,10 @@
   "main": "index.js",
   "scripts": {
     "start": "node ./server.js",
-    "bc": "webpack --progress -c ./webpack/webpack.client.js",
-    "bs": "webpack --progress -c ./webpack/webpack.server.js",
-    "build": "run-s bc bs"
+    "bc": "webpack -c ./webpack/webpack.client.js",
+    "bs": "webpack -c ./webpack/webpack.server.js",
+    "build": "run-p bc bs",
+    "demo": "node ./demo/index.js"
   },
   "author": "",
   "license": "ISC",

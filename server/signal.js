@@ -31,10 +31,6 @@ const signal = (senderId, data) => {
   }
 };
 
-wss.on("open", () => {
-  consola.info(`Websocket server running on port ${CONFIG.ws.port}`);
-});
-
 wss.on("connection", (ws) => {
   const id = randomstring.generate(10);
   clients.set(id, ws);
@@ -51,3 +47,5 @@ wss.on("connection", (ws) => {
 
   ws.send(JSON.stringify({ type: "welcome", senderId: null, payload: id }));
 });
+
+consola.info(`Websocket server running on port ${CONFIG.ws.port}`);

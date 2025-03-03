@@ -42,7 +42,7 @@ export default class Peer {
     });
   }
 
-  offer() {
+  sendOffer() {
     return this.addTask(() => {
       if (!this.offer) {
         throw new Error("no offer, you should call createOffer() first");
@@ -51,7 +51,7 @@ export default class Peer {
     });
   }
 
-  answer() {
+  sendAnswer() {
     return this.addTask(() => {
       if (!this.answer) {
         throw new Error("no answer, you should call createAnswer() first");
