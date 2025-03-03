@@ -5,7 +5,7 @@ const { WebSocketServer } = require("ws");
 const randomstring = require("randomstring");
 const consola = require("consola");
 
-const wss = new WebSocketServer({ port: CONFIG.ws.port || 3001 });
+const wss = new WebSocketServer({ port: CONFIG.ws.port });
 const clients = new Map();
 
 const signal = (senderId, data) => {
@@ -30,6 +30,10 @@ const signal = (senderId, data) => {
       break;
   }
 };
+
+wss.on("open", () => {
+  consola.info(`Websocket server running on port ${CONFIG.ws.port}`);
+});
 
 wss.on("connection", (ws) => {
   const id = randomstring.generate(10);

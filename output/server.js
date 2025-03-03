@@ -76,7 +76,7 @@ var _require = __webpack_require__(86),
 var randomstring = __webpack_require__(178);
 var consola = __webpack_require__(797);
 var wss = new WebSocketServer({
-  port: CONFIG.ws.port || 3001
+  port: CONFIG.ws.port
 });
 var clients = new Map();
 var signal = function signal(senderId, data) {
@@ -100,6 +100,9 @@ var signal = function signal(senderId, data) {
       break;
   }
 };
+wss.on("open", function () {
+  consola.info("Websocket server running on port ".concat(CONFIG.ws.port));
+});
 wss.on("connection", function (ws) {
   var id = randomstring.generate(10);
   clients.set(id, ws);
@@ -147,7 +150,7 @@ var consola = __webpack_require__(797);
 var app = new Koa();
 app.use(serve("./dist"));
 app.listen(config.port, "0.0.0.0", function () {
-  consola.info("Server running on port ".concat(config.port));
+  consola.info("Static server running on port ".concat(config.port));
 });
 
 /***/ })
