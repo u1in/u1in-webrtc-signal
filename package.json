@@ -4,10 +4,10 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "node ./server.js",
     "bc": "webpack -c ./webpack/webpack.client.js",
     "bs": "webpack -c ./webpack/webpack.server.js",
     "build": "run-p bc bs",
+    "start": "node ./output/server.js",
     "demo": "node ./demo/index.js"
   },
   "author": "",

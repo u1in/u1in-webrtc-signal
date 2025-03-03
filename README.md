@@ -24,13 +24,22 @@ npm i --production
 node server.js
 ```
 
-项目具备一个小的 demo 可以使用
+## 4. 测试
+
+本项目具有一个小demo可以进行测试，在项目目录中执行
 
 ```bash
-npm run demo
-```
-## 4. 待实现
+npm i
 
-- [ ] server.js 集成，不需要 npm i
+npm run build
+
+npm run start #启动信令服务器
+
+npm run demo #启动demo
+````
+
+## 5. 待实现
+
+- [ ] node集成，使其不需要 npm i
 - [ ] 开发datachannel的API
 - [ ] 开源完备
