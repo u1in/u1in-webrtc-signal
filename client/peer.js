@@ -20,6 +20,18 @@ export default class Peer {
     this.tasks = [];
   }
 
+  prehandle(func) {
+    return this.addTask(() => {
+      func(this.peer);
+    });
+  }
+
+  ontrack(func) {
+    return this.addTask(() => {
+      this.peer.ontrack = func;
+    });
+  }
+
   createOffer() {
     return this.addTask(async () => {
       const offer = await this.peer.createOffer();

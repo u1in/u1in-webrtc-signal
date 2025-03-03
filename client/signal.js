@@ -41,15 +41,13 @@ class Signal {
     return this;
   }
 
-  createPeer(targetId, handlePeer) {
+  createPeer(targetId) {
     if (this.peers.get(targetId)) {
-      return handlePeer(this.peers.get(targetId));
+      return this.peers.get(targetId);
     }
     let currentPeer = new RTCPeerConnection({
       iceServers: [{ urls: "stun:stun.l.google.com:19302" }],
     });
-
-    currentPeer = handlePeer(currentPeer) || currentPeer;
 
     this.peers.set(targetId, currentPeer);
 

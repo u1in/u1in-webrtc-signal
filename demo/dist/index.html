@@ -40,16 +40,16 @@
   // 注册offer事件全局监听，处理外来接入请求
   signal.on("offer", ({ senderId, payload: offer }) => {
     signal
-      .createPeer(senderId, (peer) => {
+      .createPeer(senderId)
+      .prehandle((peer) => {
         if (videoStream) {
           videoStream.getTracks().map((track) => {
             peer.addTrack(track, videoStream);
           });
         }
-        peer.ontrack = (event) => {
-          document.querySelector("#remote-video").srcObject = event.streams[0];
-        };
-        return peer;
+      }).
+      ontrack((event) => {
+        document.querySelector("#remote-video").srcObject = event.streams[0];
       })
       .saveOffer(offer)
       .createAnswer()
@@ -60,16 +60,16 @@
   // 主动发起请求
   const sendOffer = (targetId) => {
     signal
-      .createPeer(targetId, (peer) => {
+      .createPeer(targetId)
+      .prehandle((peer) => {
         if (videoStream) {
           videoStream.getTracks().map((track) => {
             peer.addTrack(track, videoStream);
           });
         }
-        peer.ontrack = (event) => {
-          document.querySelector("#remote-video").srcObject = event.streams[0];
-        };
-        return peer;
+      })
+      .ontrack((event) => {
+        document.querySelector("#remote-video").srcObject = event.streams[0];
       })
       .createOffer()
       .sendOffer()
